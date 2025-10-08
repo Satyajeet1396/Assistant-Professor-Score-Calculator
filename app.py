@@ -23,11 +23,26 @@ st.write("Compute your academic, teaching, and research score based on official 
 # =========================================================
 # ENHANCED APP LINK CONTAINER
 # =========================================================
-with st.container():
-    st.markdown("### ℹ️ About This App")
+with st.expander("ℹ️ Click here to learn about this enhanced app", expanded=False):
+    st.markdown("""
+        <style>
+        .app-info {
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #f0f2f6;
+            margin: 10px 0;
+        }
+        .app-info h3 {
+            color: #0066cc;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        .app-info ul, .app-info ol {
+            margin-bottom: 20px;
+        }
+        </style>
     st.info(
-        """
-        **Assistant Professor Eligibility Score Calculator** helps candidates compute their academic, teaching, 
+           **Assistant Professor Eligibility Score Calculator** helps candidates compute their academic, teaching, 
         and research scores based on official evaluation criteria.
 
         **Key Features:**
@@ -42,8 +57,7 @@ with st.container():
         2. Enter your teaching or postdoctoral experience in Section B.
         3. Add research contributions in Section C.
         4. Review the final score and summary.
-        """
-    )
+    """, unsafe_allow_html=True)
 
 # =========================================================
 # SECTION A: Academic Records
