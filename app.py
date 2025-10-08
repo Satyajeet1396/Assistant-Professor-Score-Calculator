@@ -56,7 +56,7 @@ mphil_phd_score = min(mphil_score + phd_score, 20)
 st.subheader("Select all that apply for JRF/NET/SET Qualification")
 exam_list = st.multiselect("Choose Qualification(s):", ["JRF", "NET", "SET"])
 exam_score = 0
-if "JRF" in exam_list:
+if "NET with JRF" in exam_list:
     exam_score += 6
 elif "NET" in exam_list:
     exam_score += 4
