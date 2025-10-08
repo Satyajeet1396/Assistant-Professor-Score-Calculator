@@ -23,7 +23,7 @@ st.write("Compute your academic, teaching, and research score based on official 
 # =========================================================
 # ENHANCED APP LINK CONTAINER
 # =========================================================
-with st.expander("ℹ️ Click here to learn about this enhanced app", expanded=False):
+with st.expander("ℹ️ Click here to learn about this Assistant Professor Score Calculator app", expanded=False):
     st.markdown("""
         <style>
         .app-info {
@@ -41,18 +41,17 @@ with st.expander("ℹ️ Click here to learn about this enhanced app", expanded=
             margin-bottom: 20px;
         }
         </style>
-    st.info(
-           **Assistant Professor Eligibility Score Calculator** helps candidates compute their academic, teaching, 
-        and research scores based on official evaluation criteria.
+<h2> Assistant Professor Eligibility Score Calculator helps candidates compute their academic, teaching, 
+        and research scores based on official evaluation criteria. <h2>
 
-        **Key Features:**
+    <h3>Key Features:<h3>
         - Calculates weighted scores for Academic Records (UG, PG, M.Phil., Ph.D., NET/SET/JRF)
         - Computes Teaching/Postdoc experience scores
         - Evaluates Research Aptitude & Innovation (Publications, Books/IPRs, Awards)
         - Provides a detailed summary table and final weighted score
         - Gives feedback based on score
 
-        **How to Use:**
+        <h3>How to Use:<h3>
         1. Fill in your academic details in Section A.
         2. Enter your teaching or postdoctoral experience in Section B.
         3. Add research contributions in Section C.
