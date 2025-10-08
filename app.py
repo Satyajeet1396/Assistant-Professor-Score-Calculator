@@ -133,8 +133,18 @@ books_ipr_score = min(books_ipr_score, 6)
 
 # c. Awards
 st.subheader("c. Awards (Max: 3 Marks)")
-award_level = st.multiselect("Select Highest Level of Award Received:", ["None", "State Level", "National/International Level"])
-award_score = {"None": 0, "State Level": 2, "National/International Level": 3}[award_level]
+award_level = st.multiselect(
+    "Select Highest Level of Award Received:", 
+    ["None", "State Level", "National/International Level"]
+)
+
+award_points = {"None": 0, "State Level": 2, "National/International Level": 3}
+
+# Sum points for all selected awards
+award_score = sum([award_points[level] for level in award_level])
+# Cap at 3 (maximum for awards)
+award_score = min(award_score, 3)
+
 
 research_total = min(pub_score + books_ipr_score + award_score, 15)
 st.success(f"Research Aptitude & Innovation Score: {research_total:.2f} / 15")
