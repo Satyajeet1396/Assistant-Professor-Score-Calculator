@@ -6,6 +6,15 @@ st.title("🎓 Assistant Professor Eligibility Score Calculator")
 st.write("Compute your academic, teaching, and research score based on official evaluation criteria.")
 
 # =========================================================
+# ENHANCED APP LINK CONTAINER
+# =========================================================
+with st.container():
+    st.markdown(
+        "[Click here to learn about this enhanced app](https://example.com/enhanced-app) 🔗",
+        unsafe_allow_html=True
+    )
+
+# =========================================================
 # SECTION A: Academic Records
 # =========================================================
 st.header("A. Academic Records (Max: 55 Marks)")
@@ -144,7 +153,6 @@ award_points = {"None": 0, "State Level": 2, "National/International Level": 3}
 award_score = sum([award_points[level] for level in award_level])
 # Cap at 3 (maximum for awards)
 award_score = min(award_score, 3)
-
 
 research_total = min(pub_score + books_ipr_score + award_score, 15)
 st.success(f"Research Aptitude & Innovation Score: {research_total:.2f} / 15")
