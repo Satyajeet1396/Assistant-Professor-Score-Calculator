@@ -3,14 +3,33 @@ import streamlit as st
 st.set_page_config(page_title="Assistant Professor Score Calculator", layout="wide")
 
 st.title("🎓 Assistant Professor Eligibility Score Calculator")
-st.write("Compute your academic, teaching, and research score based on the official evaluation criteria.")
+st.write("Compute your academic, teaching, and research score based on official evaluation criteria.")
 
 # =========================================================
 # SECTION A: Academic Records
 # =========================================================
 st.header("A. Academic Records (Max: 55 Marks)")
 
-# --- UG Percentage
+# --- University Type Weighting ---
+uni_type = st.selectbox(
+    "Select the Type of Degree Awarding University",
+    [
+        "Institutes of National Importance / Top 200 QS/THE/ARWU",
+        "Central/State University with NIRF <100 or Foreign (QS/THE/ARWU 200–500)",
+        "Other Central/State Public Universities",
+        "Other UGC Approved Universities"
+    ]
+)
+if uni_type == "Institutes of National Importance / Top 200 QS/THE/ARWU":
+    uni_factor = 1.0
+elif uni_type == "Central/State University with NIRF <100 or Foreign (QS/THE/ARWU 200–500)":
+    uni_factor = 0.9
+elif uni_type == "Other Central/State Public Universities":
+    uni_factor = 0.8
+else:
+    uni_factor = 0.6
+
+# --- UG Percentage ---
 ug_percent = st.number_input("UG Percentage (%)", min_value=0.0, max_value=100.0, step=0.1)
 if ug_percent >= 80:
     ug_score = 11
@@ -23,7 +42,7 @@ elif ug_percent >= 45:
 else:
     ug_score = 0
 
-# --- PG Percentage
+# --- PG Percentage ---
 pg_percent = st.number_input("PG Percentage (%)", min_value=0.0, max_value=100.0, step=0.1)
 if pg_percent >= 80:
     pg_score = 18
@@ -34,7 +53,7 @@ elif pg_percent >= 55:
 else:
     pg_score = 0
 
-# --- M.Phil. and Ph.D.
+# --- M.Phil. and Ph.D. ---
 mphil = st.checkbox("Have M.Phil. Degree?")
 phd = st.checkbox("Have Ph.D. Degree?")
 
@@ -52,11 +71,11 @@ if phd:
 
 mphil_phd_score = min(mphil_score + phd_score, 20)
 
-# --- JRF/NET/SET Multiple Selection
-st.subheader("Select all that apply for JRF/NET/SET Qualification")
-exam_list = st.multiselect("Choose Qualification(s):", ["JRF", "NET", "SET"])
+# --- JRF/NET/SET Multiple Selection ---
+st.subheader("Select all that apply for NET with JRF/NET/SET Qualification")
+exam_list = st.multiselect("Choose Qualification(s):", ["NET with JRF", "NET", "SET"])
 exam_score = 0
-if "NET with JRF" in exam_list:
+if "JRF" in exam_list:
     exam_score += 6
 elif "NET" in exam_list:
     exam_score += 4
@@ -64,8 +83,9 @@ elif "SET" in exam_list:
     exam_score += 3
 exam_score = min(exam_score, 6)
 
-# Academic total (without university multiplier)
-academic_total = min(ug_score + pg_score + mphil_phd_score + exam_score, 55)
+# Apply university weighting to UG, PG, MPhil, PhD (NOT to JRF/NET/SET)
+academic_total = min(((ug_score + pg_score + mphil_phd_score) * uni_factor) + exam_score, 55)
+
 st.success(f"Academic Record Score: {academic_total:.2f} / 55")
 
 # =========================================================
@@ -90,10 +110,7 @@ papers_principal = st.number_input("Number of Multi-author Papers (You as Princi
 multi_coauthor_papers = st.number_input("Number of Multi-author Papers (You as Co-author)", min_value=0, step=1)
 authors_per_paper = st.number_input("Average Total Authors per Multi-author Paper (for Co-author papers)", min_value=1, step=1, value=3)
 
-# Logic for multi-author publication scoring
-# Single author = 1 mark each
-# Principal author = 50% marks (0.5 each)
-# Co-author = remaining 50% distributed equally among (n-1) coauthors
+# Multi-author logic
 if authors_per_paper > 1:
     coauthor_share = 0.5 / (authors_per_paper - 1)
 else:
