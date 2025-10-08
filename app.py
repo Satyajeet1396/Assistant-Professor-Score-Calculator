@@ -3,31 +3,12 @@ import streamlit as st
 st.set_page_config(page_title="Assistant Professor Score Calculator", layout="wide")
 
 st.title("🎓 Assistant Professor Eligibility Score Calculator")
-st.write("Calculate your academic, teaching, and research score based on the official evaluation criteria.")
+st.write("Compute your academic, teaching, and research score based on the official evaluation criteria.")
 
-# -------------------------
+# =========================================================
 # SECTION A: Academic Records
-# -------------------------
+# =========================================================
 st.header("A. Academic Records (Max: 55 Marks)")
-
-# University Type (Weightage factor)
-uni_type = st.selectbox(
-    "Select the Type of Degree Awarding University",
-    [
-        "Institutes of National Importance / Top 200 QS/THE/ARWU",
-        "Central/State University with NIRF <100 or Foreign (QS/THE/ARWU 200-500)",
-        "Other Central/State Public Universities",
-        "Other UGC Approved Universities"
-    ]
-)
-if uni_type == "Institutes of National Importance / Top 200 QS/THE/ARWU":
-    uni_factor = 1.0
-elif uni_type == "Central/State University with NIRF <100 or Foreign (QS/THE/ARWU 200-500)":
-    uni_factor = 0.9
-elif uni_type == "Other Central/State Public Universities":
-    uni_factor = 0.8
-else:
-    uni_factor = 0.6
 
 # --- UG Percentage
 ug_percent = st.number_input("UG Percentage (%)", min_value=0.0, max_value=100.0, step=0.1)
@@ -71,35 +52,58 @@ if phd:
 
 mphil_phd_score = min(mphil_score + phd_score, 20)
 
-# --- NET/JRF/SET
-exam_type = st.selectbox("Select JRF/NET/SET Qualification", ["None", "SET", "NET", "NET with JRF"])
-exam_score = {"None": 0, "SET": 3, "NET": 4, "NET with JRF": 6}[exam_type]
+# --- JRF/NET/SET Multiple Selection
+st.subheader("Select all that apply for JRF/NET/SET Qualification")
+exam_list = st.multiselect("Choose Qualification(s):", ["JRF", "NET", "SET"])
+exam_score = 0
+if "JRF" in exam_list:
+    exam_score += 6
+elif "NET" in exam_list:
+    exam_score += 4
+elif "SET" in exam_list:
+    exam_score += 3
+exam_score = min(exam_score, 6)
 
-academic_total = (ug_score + pg_score + mphil_phd_score + exam_score) * uni_factor
-academic_total = min(academic_total, 55)
-
+# Academic total (without university multiplier)
+academic_total = min(ug_score + pg_score + mphil_phd_score + exam_score, 55)
 st.success(f"Academic Record Score: {academic_total:.2f} / 55")
 
-# -------------------------
+# =========================================================
 # SECTION B: Teaching Experience
-# -------------------------
+# =========================================================
 st.header("B. Teaching / Post-Doctoral Experience (Max: 5 Marks)")
 teaching_years = st.number_input("Total Approved Teaching/Postdoc Experience (Years)", min_value=0.0, step=0.1)
 teaching_score = min(teaching_years * 1.0, 5.0)
 st.success(f"Teaching Experience Score: {teaching_score:.2f} / 5")
 
-# -------------------------
+# =========================================================
 # SECTION C: Research Aptitude & Innovation
-# -------------------------
+# =========================================================
 st.header("C. Research Aptitude and Innovation Skills (Max: 15 Marks)")
 
 # a. Research Publications
 st.subheader("a. Research Publications (Max: 6 Marks)")
-papers_single = st.number_input("Number of Single-author Indexed Papers", min_value=0, step=1)
-papers_principal = st.number_input("Number of Multi-author Papers (You as Principal Author)", min_value=0, step=1)
-papers_coauthor = st.number_input("Number of Multi-author Papers (You as Co-author)", min_value=0, step=1)
+st.caption("Only Indexed Journal papers (SciFinder, Web of Science, Scopus) are counted.")
 
-pub_score = papers_single * 1 + papers_principal * 0.5 + papers_coauthor * 0.25
+papers_single = st.number_input("Number of Single-author Indexed Papers", min_value=0, step=1)
+papers_principal = st.number_input("Number of Multi-author Papers (You as Principal/Corresponding Author)", min_value=0, step=1)
+multi_coauthor_papers = st.number_input("Number of Multi-author Papers (You as Co-author)", min_value=0, step=1)
+authors_per_paper = st.number_input("Average Total Authors per Multi-author Paper (for Co-author papers)", min_value=1, step=1, value=3)
+
+# Logic for multi-author publication scoring
+# Single author = 1 mark each
+# Principal author = 50% marks (0.5 each)
+# Co-author = remaining 50% distributed equally among (n-1) coauthors
+if authors_per_paper > 1:
+    coauthor_share = 0.5 / (authors_per_paper - 1)
+else:
+    coauthor_share = 0.0
+
+pub_score = (
+    papers_single * 1.0
+    + papers_principal * 0.5
+    + multi_coauthor_papers * coauthor_share
+)
 pub_score = min(pub_score, 6)
 
 # b. Books / IPR
@@ -121,20 +125,32 @@ award_score = {"None": 0, "State Level": 2, "National/International Level": 3}[a
 research_total = min(pub_score + books_ipr_score + award_score, 15)
 st.success(f"Research Aptitude & Innovation Score: {research_total:.2f} / 15")
 
-# -------------------------
-# FINAL CALCULATION
-# -------------------------
-st.header("Final Evaluation")
+# =========================================================
+# FINAL CALCULATION & SUMMARY
+# =========================================================
+st.header("Final Evaluation Summary")
 
 final_score = academic_total + teaching_score + research_total
 max_score = 55 + 5 + 15
+
 st.metric("Total Weighted Score", f"{final_score:.2f} / {max_score}")
 
+# Detailed Summary Table
+st.subheader("📊 Score Summary")
+summary = {
+    "Academic Record (A)": f"{academic_total:.2f} / 55",
+    "Teaching Experience (B)": f"{teaching_score:.2f} / 5",
+    "Research Aptitude & Innovation (C)": f"{research_total:.2f} / 15",
+    "Final Weighted Total": f"{final_score:.2f} / {max_score}"
+}
+st.table(summary)
+
+# Feedback
 if final_score >= 60:
     st.balloons()
-    st.success("Excellent! You have a strong academic profile for Assistant Professor selection.")
+    st.success("Excellent! You have a strong academic and research profile for Assistant Professor selection.")
 else:
-    st.warning("You can improve your score by enhancing publications or qualifications.")
+    st.warning("Consider improving your publications, experience, or qualifications to strengthen your profile.")
 
 st.markdown("---")
-st.caption("Developed with ❤️ using Streamlit | Logic based on official evaluation scheme (Academic 55 + Teaching 5 + Research 15 = 75 Marks)")
+st.caption("Developed with ❤️ using Streamlit | Based on official Assistant Professor evaluation scheme (Academic 55 + Teaching 5 + Research 15 = 75 Marks)")
