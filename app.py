@@ -133,8 +133,6 @@ books_ipr_score = min(books_ipr_score, 6)
 
 # c. Awards
 st.subheader("c. Awards (Max: 3 Marks)")
-
-st.subheader("Select all that apply for JRF/NET/SET Qualification")
 award_level = st.multiselect("Select Highest Level of Award Received:", ["None", "State Level", "National/International Level"])
 award_score = {"None": 0, "State Level": 2, "National/International Level": 3}[award_level]
 
