@@ -1,4 +1,19 @@
 import streamlit as st
+import pandas as pd
+from rapidfuzz import process, fuzz
+import re
+from openpyxl import load_workbook
+from openpyxl.styles import PatternFill, Font
+from io import BytesIO
+from functools import lru_cache
+from tqdm import tqdm
+import qrcode
+import base64
+import openpyxl
+import plotly.express as px
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
+import numpy as np
 
 st.set_page_config(page_title="Assistant Professor Score Calculator", layout="wide")
 
